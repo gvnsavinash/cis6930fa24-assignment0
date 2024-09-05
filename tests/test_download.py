@@ -1,28 +1,52 @@
 import sys
-import os
+import os.path
+from io import StringIO
 
-# Add the parent directory of `tests` to sys.path so that `main.py` can be imported
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
-
+sys.path.append(
+    os.path.abspath(os.path.join(os.path.dirname(__file__), os.path.pardir))
+)
 import main
 
-def test_fetch_data_from_api():
-    """Test that fetching data from the FBI API returns valid JSON."""
-    page = 1  # Test the first page
-    data = main.fetch_data_from_api(page)
-    
-    assert isinstance(data, dict), "API response should be a dictionary."
-    assert 'items' in data, "API response should contain 'items'."
-    assert len(data['items']) > 0, "API response 'items' should not be empty."
+def test_successful_data_download():
+    """Check if fetching data from the FBI API returns valid JSON."""
+    data = main.fetch_fbi_wanted_list_by_page(1)
+    assert isinstance(data, dict) and 'items' in data and data['items'], "Invalid data"
 
-def test_process_data():
-    """Test processing the data from the API."""
-    # Simulated API response data
-    data = {
+def test_empty_api_response():
+    """Check how an empty API response is handled."""
+    assert main.format_fbi_wanted_data({"items": []}) == "", "Not empty"
+
+def test_empty_strings_in_response():
+    """Check if empty strings in API response fields are handled properly."""
+    data = {"items": [{"title": "", "subjects": [""], "field_offices": [""]}]}
+    assert main.format_fbi_wanted_data(data) == "þþ", "Invalid empty string handling"
+
+def test_valid_data_structure():
+    """Verify that the API returns data in the correct structure."""
+    data = main.fetch_fbi_wanted_list_by_page(1)
+    assert isinstance(data, dict) and 'items' in data, "Invalid structure"
+    for item in data['items']:
+        assert all(k in item for k in ['title', 'subjects', 'field_offices']), "Missing keys"
+
+def test_duplicate_entries():
+    """Check how duplicate items in the API response are handled."""
+    data = {"items": [{"title": "Duplicate Title", "subjects": ["Subject A"], "field_offices": ["Office X"]}] * 2}
+    assert main.format_fbi_wanted_data(data).count("Duplicate Title") == 2, "Duplicates not handled"
+
+def test_printing_thorn_separated_output():
+    """Test if the formatted thorn-separated output is printed correctly."""
+    test_data = {
         "items": [
-            {"title": "Test Title", "subjects": ["Subject1", "Subject2"], "field_offices": ["office1", "office2"]}
+            {"title": "Test Title", "subjects": ["Test Subject"], "field_offices": ["Test Office"]},
+            {"title": "Another Title", "subjects": ["Another Subject"], "field_offices": ["Another Office"]}
         ]
-    }
-    
-    result = main.process_data(data)
-    assert result == "Test TitleþSubject1, Subject2þoffice1, office2", "Processed data does not match expected output."
+    }  
+    expected_output = "Test TitleþTest SubjectþTest Office\nAnother TitleþAnother SubjectþAnother Office\n"
+    captured_output = StringIO()
+    sys.stdout = captured_output
+    # Format and print the data
+    main.format_fbi_wanted_data(test_data)
+    print(main.format_fbi_wanted_data(test_data))
+    sys.stdout = sys.__stdout__
+    # Assert the captured output matches the expected output
+    assert captured_output.getvalue() == expected_output, "Output does not match expected thorn-separated format"
