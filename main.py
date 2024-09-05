@@ -2,6 +2,7 @@ import argparse
 import sys
 import requests
 import json
+import csv
 
 THORN = 'þ'
 
@@ -46,7 +47,7 @@ def get_item_field_offices(item):
         return ', '.join(field_offices)
     return ''
 
-def format_fbi_wanted_data(data):
+def format_fbi_wanted_data(data, search_term=None):
     """Process and organize the data into the required thorn-separated format."""
     if not isinstance(data, dict) or 'items' not in data:
         print("Invalid data structure.")
@@ -57,12 +58,29 @@ def format_fbi_wanted_data(data):
         title = get_item_title(item)
         subjects = get_item_subjects(item)
         field_offices = get_item_field_offices(item)
+        
+        # Filter based on the search term if provided
+        if search_term and search_term.lower() not in title.lower() and search_term.lower() not in subjects.lower():
+            continue
+        
+        # Print thorn-separated output
         formatted_line = f"{title}{THORN}{subjects}{THORN}{field_offices}"
-        formatted_lines.append(formatted_line)
+        formatted_lines.append({
+            'title': title,
+            'subjects': subjects,
+            'field_offices': field_offices
+        })
     
-    return '\n'.join(formatted_lines)
+    return formatted_lines
 
-def main(page=None, file_location=None):
+def save_to_csv(data, file_location='output.csv'):
+    """Save the formatted data to a CSV file with proper columns."""
+    with open(file_location, 'w', newline='', encoding='utf-8') as csvfile:
+        csv_writer = csv.DictWriter(csvfile, fieldnames=['title', 'subjects', 'field_offices'])
+        csv_writer.writeheader()
+        csv_writer.writerows(data)
+
+def main(page=None, file_location=None, search_term=None):
     """Download data and print the thorn-separated file."""
     if page is not None:
         data = fetch_fbi_wanted_list_by_page(page)
@@ -72,19 +90,26 @@ def main(page=None, file_location=None):
         print("Please specify either --page or --file-location")
         sys.exit(1)
 
-    formatted_output = format_fbi_wanted_data(data)
-    print(formatted_output)
+    formatted_output = format_fbi_wanted_data(data, search_term)
+
+    # Print to standard output with thorn separator
+    for item in formatted_output:
+        print(f"{item['title']}{THORN}{item['subjects']}{THORN}{item['field_offices']}")
+
+    # Save to CSV file
+    save_to_csv(formatted_output)
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description="API Data Retrieve: FBI Most Wanted List")
     parser.add_argument("--page", type=int, required=False, help="Include page number to fetch from the FBI API")
     parser.add_argument("--file-location", type=str, required=False, help="Include path location of the JSON file")
+    parser.add_argument("--search-term", type=str, required=False, help="Search term to filter the wanted list")
 
     args = parser.parse_args()
 
     if args.page:
-        main(page=args.page)
+        main(page=args.page, search_term=args.search_term)
     elif args.file_location:
-        main(file_location=args.file_location)
+        main(file_location=args.file_location, search_term=args.search_term)
     else:
         parser.print_help(sys.stderr)

@@ -50,7 +50,7 @@ Data Engineerþþall over
 To set up the environment, use `pipenv` to install the required packages. Run the following command in your project directory:
 
 
-pipenv install -e .
+pipenv install 
 
 
 This will create a virtual environment and install the dependencies needed to run the project.
@@ -89,24 +89,31 @@ You can run the program in two ways:
 ### `main.py` Functions
 
 - `fetch_fbi_wanted_list_by_page(page)`: 
+
   - Fetches data from the FBI API for a specified page.
   
 - `load_json_from_file(file_location)`: 
+
   - Loads data from a specified JSON file on your local machine.
 
 - `get_item_title(item)`: 
+
   - Extracts the title from a record (e.g., the name of the wanted person or event).
 
 - `get_item_subjects(item)`: 
+
   - Extracts and formats the subjects related to the case as a comma-separated list.
 
-- `get_item_field_offices(item)`: 
+- `get_item_field_offices(item)`:
+
   - Extracts and formats the field offices handling the case as a comma-separated list.
 
-- `format_fbi_wanted_data(data)`: 
+- `format_fbi_wanted_data(data)`:
+
   - Formats the data into a thorn-separated format.
 
 - `main(page=None, file_location=None)`: 
+
   - The main function that coordinates retrieving data (either from the API or a file), formatting it, and printing the output.
 
 ---
@@ -120,21 +127,27 @@ There are two test files included in this project to ensure the functionality wo
 This file includes the following tests:
 
 1. `test_successful_data_download`:
+
    - Tests if data is successfully downloaded from the FBI API.
    
 2. `test_empty_api_response`:
+
    - Checks how the program handles an empty API response.
    
 3. `test_empty_strings_in_response`:
+
    - Ensures that empty fields in the API response are correctly handled (leaving them blank in the output).
    
 4. `test_valid_data_structure`:
+
    - Verifies that the structure of the data is correct, containing the required fields (`title`, `subjects`, `field_offices`).
    
 5. `test_duplicate_entries`:
+
    - Checks how the program handles duplicate entries in the API response.
 
 6. `test_printing_thorn_separated_output`: 
+
    - Verifies if the formatted thorn-separated output is correctly printed for given test data.
 
 ### `test_randompage.py`
@@ -142,12 +155,19 @@ This file includes the following tests:
 This file includes a test for retrieving data from a random page:
 
 1. `test_fetch_random_page`:
+
    - Selects a random page number and verifies that data is fetched correctly from that page of the FBI API.
+
 2. `test_invalid_page`: 
+
     - Ensures that fetching data from an invalid page returns an empty 'items' field.
+
 3. `test_random_page_special_characters`:
+
     - Tests proper handling and formatting of special characters in the FBI wanted list data.
+
 4. `test_random_page_with_empty_items`: 
+
     - Confirms that an empty 'items' field in the data returns an empty output.
    
 ---
