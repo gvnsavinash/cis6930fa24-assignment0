@@ -134,12 +134,21 @@ This file includes the following tests:
 5. `test_duplicate_entries`:
    - Checks how the program handles duplicate entries in the API response.
 
+6. `test_printing_thorn_separated_output`: 
+   - Verifies if the formatted thorn-separated output is correctly printed for given test data.
+
 ### `test_randompage.py`
 
 This file includes a test for retrieving data from a random page:
 
 1. `test_fetch_random_page`:
    - Selects a random page number and verifies that data is fetched correctly from that page of the FBI API.
+2. `test_invalid_page`: 
+    - Ensures that fetching data from an invalid page returns an empty 'items' field.
+3. `test_random_page_special_characters`:
+    - Tests proper handling and formatting of special characters in the FBI wanted list data.
+4. `test_random_page_with_empty_items`: 
+    - Confirms that an empty 'items' field in the data returns an empty output.
    
 ---
 
