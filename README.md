@@ -112,9 +112,13 @@ You can run the program in two ways:
 
   - Formats the data into a thorn-separated format.
 
+ - `save_to_csv(data)`:
+    - Save the formatted data to a CSV file with proper columns.
+
 - `main(page=None, file_location=None)`: 
 
   - The main function that coordinates retrieving data (either from the API or a file), formatting it, and printing the output.
+
 
 ---
 
@@ -130,25 +134,15 @@ This file includes the following tests:
 
    - Tests if data is successfully downloaded from the FBI API.
    
-2. `test_empty_api_response`:
+2. `test_valid_data_structure`:
 
-   - Checks how the program handles an empty API response.
+   - Verify that the API returns data in the correct structure.
+     
+3. `test_load_json_from_file`:
+
+   - Test loading data from a JSON file..
    
-3. `test_empty_strings_in_response`:
 
-   - Ensures that empty fields in the API response are correctly handled (leaving them blank in the output).
-   
-4. `test_valid_data_structure`:
-
-   - Verifies that the structure of the data is correct, containing the required fields (`title`, `subjects`, `field_offices`).
-   
-5. `test_duplicate_entries`:
-
-   - Checks how the program handles duplicate entries in the API response.
-
-6. `test_printing_thorn_separated_output`: 
-
-   - Verifies if the formatted thorn-separated output is correctly printed for given test data.
 
 ### `test_randompage.py`
 
@@ -162,13 +156,10 @@ This file includes a test for retrieving data from a random page:
 
     - Ensures that fetching data from an invalid page returns an empty 'items' field.
 
-3. `test_random_page_special_characters`:
+3. `test_get_item_title`:
 
-    - Tests proper handling and formatting of special characters in the FBI wanted list data.
+    - Test retrieving the title from an item in the API data..
 
-4. `test_random_page_with_empty_items`: 
-
-    - Confirms that an empty 'items' field in the data returns an empty output.
    
 ---
 

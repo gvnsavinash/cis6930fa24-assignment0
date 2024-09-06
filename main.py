@@ -13,8 +13,8 @@ def fetch_fbi_wanted_list_by_page(page):
         response = requests.get(url)
         response.raise_for_status()  # Raises an exception for bad responses
         return response.json()
-    except requests.exceptions.RequestException as e:
-        print(f"Error fetching data from the API: {e}")
+    except Exception as e:
+        print(f"Expection Error : {e}")
         sys.exit(1)
 
 def load_json_from_file(file_location):
@@ -22,11 +22,8 @@ def load_json_from_file(file_location):
     try:
         with open(file_location, 'r') as file:
             return json.load(file)
-    except FileNotFoundError:
-        print(f"File not found: {file_location}")
-        sys.exit(1)
-    except json.JSONDecodeError:
-        print(f"Error decoding JSON from file: {file_location}")
+    except Exception as e:
+        print(f"Expection Error : {e}")
         sys.exit(1)
 
 def get_item_title(item):
@@ -37,6 +34,7 @@ def get_item_subjects(item):
     """Retrieve and format the subjects from the 'item' in the API data."""
     subjects = item.get('subjects', [])
     if isinstance(subjects, list):
+        #print("sub",subjects)
         return ', '.join(subjects)
     return ''
 
@@ -44,10 +42,11 @@ def get_item_field_offices(item):
     """Retrieve and organize the field offices from the 'item' in the API data."""
     field_offices = item.get('field_offices', [])
     if isinstance(field_offices, list):
+        #print("field",field_offices)
         return ', '.join(field_offices)
     return ''
 
-def format_fbi_wanted_data(data, search_term=None):
+def format_fbi_wanted_data(data):
     """Process and organize the data into the required thorn-separated format."""
     if not isinstance(data, dict) or 'items' not in data:
         print("Invalid data structure.")
@@ -60,11 +59,6 @@ def format_fbi_wanted_data(data, search_term=None):
         field_offices = get_item_field_offices(item)
         
         # Filter based on the search term if provided
-        if search_term and search_term.lower() not in title.lower() and search_term.lower() not in subjects.lower():
-            continue
-        
-        # Print thorn-separated output
-        formatted_line = f"{title}{THORN}{subjects}{THORN}{field_offices}"
         formatted_lines.append({
             'title': title,
             'subjects': subjects,
@@ -90,7 +84,7 @@ def main(page=None, file_location=None, search_term=None):
         print("Please specify either --page or --file-location")
         sys.exit(1)
 
-    formatted_output = format_fbi_wanted_data(data, search_term)
+    formatted_output = format_fbi_wanted_data(data)
 
     # Print to standard output with thorn separator
     for item in formatted_output:
@@ -103,13 +97,12 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description="API Data Retrieve: FBI Most Wanted List")
     parser.add_argument("--page", type=int, required=False, help="Include page number to fetch from the FBI API")
     parser.add_argument("--file-location", type=str, required=False, help="Include path location of the JSON file")
-    parser.add_argument("--search-term", type=str, required=False, help="Search term to filter the wanted list")
-
+    
     args = parser.parse_args()
 
     if args.page:
-        main(page=args.page, search_term=args.search_term)
+        main(page=args.page)
     elif args.file_location:
-        main(file_location=args.file_location, search_term=args.search_term)
+        main(file_location=args.file_location)
     else:
         parser.print_help(sys.stderr)

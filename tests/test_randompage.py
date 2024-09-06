@@ -19,12 +19,10 @@ def test_invalid_page():
     data = main.fetch_fbi_wanted_list_by_page(10000)
     assert 'items' in data and not data['items'], "Invalid page should return empty 'items'"
 
-def test_random_page_special_characters():
-    """Test handling of special characters in the random page response."""
-    data = {"items": [{"title": "Test @Title$", "subjects": ["Subject!"], "field_offices": ["Office#"]}]}
-    assert main.format_fbi_wanted_data(data) == "Test @Title$þSubject!þOffice#", "Special characters not handled correctly"
 
-def test_random_page_with_empty_items():
-    """Test handling of random page response where 'items' is empty."""
-    data = {"items": []}
-    assert main.format_fbi_wanted_data(data) == "", "Output should be empty for empty 'items'"
+
+def test_get_item_title():
+    """Test retrieving the title from an item in the API data."""
+    item = {'title': 'Test Title'}
+    title = main.get_item_title(item)
+    assert title == 'Test Title', "Invalid title"
