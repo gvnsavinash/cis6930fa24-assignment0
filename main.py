@@ -67,12 +67,12 @@ def format_fbi_wanted_data(data):
     
     return formatted_lines
 
-def save_to_csv(data, file_location='output.csv'):
-    """Save the formatted data to a CSV file with proper columns."""
-    with open(file_location, 'w', newline='', encoding='utf-8') as csvfile:
-        csv_writer = csv.DictWriter(csvfile, fieldnames=['title', 'subjects', 'field_offices'])
-        csv_writer.writeheader()
-        csv_writer.writerows(data)
+# def save_to_csv(data, file_location='output.csv'):
+#     """Save the formatted data to a CSV file with proper columns."""
+#     with open(file_location, 'w', newline='', encoding='utf-8') as csvfile:
+#         csv_writer = csv.DictWriter(csvfile, fieldnames=['title', 'subjects', 'field_offices'])
+#         csv_writer.writeheader()
+#         csv_writer.writerows(data)
 
 def main(page=None, file_location=None, search_term=None):
     """Download data and print the thorn-separated file."""
@@ -91,7 +91,7 @@ def main(page=None, file_location=None, search_term=None):
         print(f"{item['title']}{THORN}{item['subjects']}{THORN}{item['field_offices']}")
 
     # Save to CSV file
-    save_to_csv(formatted_output)
+    #save_to_csv(formatted_output)
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description="API Data Retrieve: FBI Most Wanted List")
