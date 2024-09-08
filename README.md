@@ -35,7 +35,7 @@ The output is a list of records where each line follows this structure:
 {title}þ{subjects}þ{field_offices}
 
 
-For example, a sample output could look like this:
+For example, a sample output :
 
 Extreme lossþsebastian,Pit BullþMiami
 Dissapointing teamþDJþTallahassee,Dublin
@@ -91,10 +91,12 @@ You can run the program in two ways:
 - `fetch_fbi_wanted_list_by_page(page)`: 
 
   - Fetches data from the FBI API for a specified page.
+  - Raises exceptions in case of errors and exits the program.
   
 - `load_json_from_file(file_location)`: 
 
   - Loads data from a specified JSON file on your local machine.
+  - Exits the program if there's an error while reading the file.
 
 - `get_item_title(item)`: 
 
@@ -172,11 +174,8 @@ The tests will automatically validate the main functionalities, such as download
 
 ---
 
-## Bugs and Assumptions
-
-Here’s a shortened version of the Bugs and Assumptions section:
-
----
+## FUTURE APPROACH TO DATABASE DEVELOPMENT
+The program does not use a database but relies on fetching data in real-time from the FBI's API. The API data is then processed and formatted as required. Future versions may consider storing the fetched data into a database for better retrieval and management.
 
 ## Bugs and Assumptions
 
