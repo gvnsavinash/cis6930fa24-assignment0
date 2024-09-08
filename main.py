@@ -2,7 +2,7 @@ import argparse
 import sys
 import requests
 import json
-import csv
+# import csv
 
 THORN = 'þ'
 
@@ -17,10 +17,10 @@ def fetch_fbi_wanted_list_by_page(page):
         print(f"Expection Error : {e}")
         sys.exit(1)
 
-def load_json_from_file(file_location):
+def load_json_from_file(file):
     """Load data from a JSON file."""
     try:
-        with open(file_location, 'r') as file:
+        with open(file, 'r') as file:
             return json.load(file)
     except Exception as e:
         print(f"Expection Error : {e}")
@@ -67,19 +67,19 @@ def format_fbi_wanted_data(data):
     
     return formatted_lines
 
-# def save_to_csv(data, file_location='output.csv'):
+# def save_to_csv(data, file='output.csv'):
 #     """Save the formatted data to a CSV file with proper columns."""
-#     with open(file_location, 'w', newline='', encoding='utf-8') as csvfile:
+#     with open(file, 'w', newline='', encoding='utf-8') as csvfile:
 #         csv_writer = csv.DictWriter(csvfile, fieldnames=['title', 'subjects', 'field_offices'])
 #         csv_writer.writeheader()
 #         csv_writer.writerows(data)
 
-def main(page=None, file_location=None, search_term=None):
+def main(page=None, thefile=None, search_term=None):
     """Download data and print the thorn-separated file."""
     if page is not None:
         data = fetch_fbi_wanted_list_by_page(page)
-    elif file_location is not None:
-        data = load_json_from_file(file_location)
+    elif thefile is not None:
+        data = load_json_from_file(thefile)
     else:
         print("Please specify either --page or --file-location")
         sys.exit(1)
@@ -96,13 +96,13 @@ def main(page=None, file_location=None, search_term=None):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description="API Data Retrieve: FBI Most Wanted List")
     parser.add_argument("--page", type=int, required=False, help="Include page number to fetch from the FBI API")
-    parser.add_argument("--file-location", type=str, required=False, help="Include path location of the JSON file")
+    parser.add_argument("--file", type=str, required=False, help="Include path location of the JSON file")
     
     args = parser.parse_args()
 
     if args.page:
         main(page=args.page)
-    elif args.file_location:
-        main(file_location=args.file_location)
+    elif args.file:
+        main(thefile=args.file)
     else:
         parser.print_help(sys.stderr)

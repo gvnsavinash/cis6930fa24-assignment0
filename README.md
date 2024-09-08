@@ -112,9 +112,6 @@ You can run the program in two ways:
 
   - Formats the data into a thorn-separated format.
 
- - `save_to_csv(data)`:
-    - Save the formatted data to a CSV file with proper columns.
-
 - `main(page=None, file_location=None)`: 
 
   - The main function that coordinates retrieving data (either from the API or a file), formatting it, and printing the output.
