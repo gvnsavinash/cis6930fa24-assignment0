@@ -188,4 +188,5 @@ The tests will automatically validate the main functionalities, such as download
 6. Empty Fields: Empty or null fields are handled, but fully empty records might still appear in the output.
 7. File Access: Assumes that the user has read permissions for the file in the `--file-location` option.
 8. Data Consistency: The program expects the data to be consistently formatted. Inconsistent entries may cause issues.
+
 ---
