@@ -1,23 +1,43 @@
 import argparse
 import sys
+import urllib.request
 import requests
 import json
+import random
 # import csv
 
 THORN = 'þ'
 
-def fetch_fbi_wanted_list_by_page(page):
-    """Fetch FBI wanted data from the API for the given page."""
+def fetch_data(page):
+    """
+    Fetches data from the FBI API.
+    Parameters:
+    - page (int): The page number of the data to fetch.
+    Returns:
+    - dict: The JSON data fetched from the API.
+    Raises:
+    - Exception: If an error occurs while fetching the data.
+    """
+    url = f"https://api.fbi.gov/wanted/v1/list?page={page}"
+    
+    # randomized User-Agent string by selecting from different components
+    platforms = ["X11; Linux x86_64", "Windows NT 10.0; Win64; x64", "Macintosh; Intel Mac OS X 10_15_7"]
+    browsers = ["Chrome/90.0.4430.212", "Firefox/89.0", "Safari/537.36"]
+    user_agent = f"Mozilla/5.0 ({random.choice(platforms)}) AppleWebKit/537.36 (KHTML, like Gecko) {random.choice(browsers)}"
+
+    headers = {
+        'User-Agent': user_agent
+    }
     try:
-        url = f"https://api.fbi.gov/wanted/v1/list?page={page}"
-        response = requests.get(url)
-        response.raise_for_status()  # Raises an exception for bad responses
-        return response.json()
+        request = urllib.request.Request(url, headers=headers)
+        # Fetch the data from the API
+        with urllib.request.urlopen(request) as response:
+            return json.load(response)
     except Exception as e:
-        print(f"Expection Error : {e}")
+        print(f"Error occurred while fetching data: {e}")
         sys.exit(1)
 
-def load_json_from_file(file):
+def fetch_data_from_file(file):
     """Load data from a JSON file."""
     try:
         with open(file, 'r') as file:
@@ -31,7 +51,13 @@ def get_item_title(item):
     return item.get('title', '')
 
 def get_item_subjects(item):
-    """Retrieve and format the subjects from the 'item' in the API data."""
+    """
+    Returns a string representation of the subjects associated with the given item.
+    Parameters:
+    - item (dict): A dictionary representing an item.
+    Returns:
+    - str: A string representation of the subjects, separated by commas. If no subjects are found, an empty string is returned.
+    """
     subjects = item.get('subjects', [])
     if isinstance(subjects, list):
         #print("sub",subjects)
@@ -77,16 +103,15 @@ def format_fbi_wanted_data(data):
 def main(page=None, thefile=None, search_term=None):
     """Download data and print the thorn-separated file."""
     if page is not None:
-        data = fetch_fbi_wanted_list_by_page(page)
+        data = fetch_data(page)
     elif thefile is not None:
-        data = load_json_from_file(thefile)
+        data = fetch_data_from_file(thefile)
     else:
         print("Please specify either --page or --file-location")
         sys.exit(1)
 
     formatted_output = format_fbi_wanted_data(data)
 
-    # Print to standard output with thorn separator
     for item in formatted_output:
         print(f"{item['title']}{THORN}{item['subjects']}{THORN}{item['field_offices']}")
 
@@ -95,8 +120,9 @@ def main(page=None, thefile=None, search_term=None):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description="API Data Retrieve: FBI Most Wanted List")
-    parser.add_argument("--page", type=int, required=False, help="Include page number to fetch from the FBI API")
     parser.add_argument("--file", type=str, required=False, help="Include path location of the JSON file")
+    parser.add_argument("--page", type=int, required=False, help="Include page number to fetch from the FBI API")
+    
     
     args = parser.parse_args()
 

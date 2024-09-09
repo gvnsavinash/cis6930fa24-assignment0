@@ -8,7 +8,7 @@ Name: Venkata Naga Satya Avinash, Gudipudi
 
 This project is about working with the FBI’s Most Wanted API. We need to fetch data from the API and format it into a CSV-like structure with a special thorn character (`þ`) separating the values. The data includes information about people wanted by the FBI, such as the title, subjects, and field offices related to each case. 
 
-You can either retrieve data directly from the FBI API or read it from a local JSON file.
+The program can either fetch live data from the API or read it from a local JSON file. Once retrieved, the data is formatted for output.
 
 ---
 
@@ -18,10 +18,10 @@ You can either retrieve data directly from the FBI API or read it from a local J
    - You can either fetch data from the FBI’s Most Wanted API or load it from a local JSON file.
    
 2. Data Processing: 
-   - The program extracts the title, subjects, and field offices for each record.
+   - The program extracts key fields such as the title, subjects, and field offices from each data record.
    
-3. Formatting: 
-   - The data is then formatted with a thorn character (`þ`) separating the values.
+3. Data Formatting: 
+   - The extracted data is formatted into thorn-separated (þ) records, creating a structured and human-readable output.
 
 4. Output: 
    - The formatted data is printed to the console (standard output).
@@ -69,7 +69,7 @@ You can run the program in two ways:
    pipenv run python main.py --page <page_number>
    
 
-   Replace `<page_number>` with a number like `1` or `2` to get the respective page from the API.
+   Replace `<page_number>` with a number like `1` or `2` etc , to get the respective page from the API.
 
 2. Load data from a local JSON file:
 
@@ -88,12 +88,12 @@ You can run the program in two ways:
 
 ### `main.py` Functions
 
-- `fetch_fbi_wanted_list_by_page(page)`: 
+- `fetch_data(page)`: 
 
   - Fetches data from the FBI API for a specified page.
   - Raises exceptions in case of errors and exits the program.
   
-- `load_json_from_file(file_location)`: 
+- `load_json(file_location)`: 
 
   - Loads data from a specified JSON file on your local machine.
   - Exits the program if there's an error while reading the file.
@@ -104,15 +104,16 @@ You can run the program in two ways:
 
 - `get_item_subjects(item)`: 
 
-  - Extracts and formats the subjects related to the case as a comma-separated list.
+  - Extracts and formats the subjects from a record as a list or a string. Handles empty or missing subjects.
 
 - `get_item_field_offices(item)`:
 
-  - Extracts and formats the field offices handling the case as a comma-separated list.
+  - Extracts and formats the field offices from a record as a list or a string with a comma-separated.
 
 - `format_fbi_wanted_data(data)`:
 
-  - Formats the data into a thorn-separated format.
+  - Formats the retrieved or loaded data into a thorn-separated format.
+  - Returns a list where each entry is formatted as {title}þ{subjects}þ{field_offices}.
 
 - `main(page=None, file_location=None)`: 
 
@@ -127,19 +128,19 @@ There are two test files included in this project to ensure the functionality wo
 
 ### `test_download.py`
 
-This file includes the following tests:
+This file includes the following tests and it will retrieving from API Page:
 
-1. `test_successful_data_download`:
+1. test_extract_fields():
+   - Tests the extraction of fields like title, subjects, and field offices from the data, ensuring correct handling of None and string types.
 
-   - Tests if data is successfully downloaded from the FBI API.
-   
-2. `test_valid_data_structure`:
+2. test_successful_data_download():
+   - Verifies successful data downloading from the FBI API.
 
-   - Verify that the API returns data in the correct structure.
-     
-3. `test_load_json_from_file`:
+3. test_load_json():
+  - Tests loading data from a local JSON file.
 
-   - Test loading data from a JSON file..
+4. test_format_fbi_wanted_data():
+  - Validates the proper formatting of FBI data into thorn-separated format and ensures it contains the necessary keys.
    
 
 
@@ -147,19 +148,18 @@ This file includes the following tests:
 
 This file includes a test for retrieving data from a random page:
 
-1. `test_fetch_random_page`:
+1. test_fetch_random_page():
+  - Tests fetching data from a random page of the FBI API and validates its correctness.
 
-   - Selects a random page number and verifies that data is fetched correctly from that page of the FBI API.
+2. test_invalid_page():
+  - Verifies that fetching from an invalid page returns an empty result set.
 
-2. `test_invalid_page`: 
+3. test_get_item_title():
+  - Tests extracting the title field from an API response.
 
-    - Ensures that fetching data from an invalid page returns an empty 'items' field.
-
-3. `test_get_item_title`:
-
-    - Test retrieving the title from an item in the API data..
-
-   
+4. test_format_fbi_wanted_data():
+  - Tests that the formatted output contains thorn-separated values for the title, subjects, and field offices.
+  
 ---
 
 ## How to Run the Tests
@@ -174,8 +174,9 @@ The tests will automatically validate the main functionalities, such as download
 
 ---
 
-## FUTURE APPROACH TO DATABASE DEVELOPMENT
-The program does not use a database but relies on fetching data in real-time from the FBI's API. The API data is then processed and formatted as required. Future versions may consider storing the fetched data into a database for better retrieval and management.
+## Future Enhancements
+1. Database Integration: The program does not use a database but relies on fetching data in real-time from the FBI's API. The API data is then processed and formatted as required. Future versions may consider storing the fetched data into a database for better retrieval and management.
+2. Extended Field Extraction: Future versions could extract more fields from the API, such as images or detailed descriptions.
 
 ## Bugs and Assumptions
 
