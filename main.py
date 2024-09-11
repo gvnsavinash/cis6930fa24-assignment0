@@ -11,30 +11,16 @@ THORN = 'þ'
 def fetch_data(page):
     """
     Fetches data from the FBI API.
-    Parameters:
-    - page (int): The page number of the data to fetch.
-    Returns:
-    - dict: The JSON data fetched from the API.
     Raises:
     - Exception: If an error occurs while fetching the data.
     """
-    url = f"https://api.fbi.gov/wanted/v1/list?page={page}"
-    
-    # randomized User-Agent string by selecting from different components
-    platforms = ["X11; Linux x86_64", "Windows NT 10.0; Win64; x64", "Macintosh; Intel Mac OS X 10_15_7"]
-    browsers = ["Chrome/90.0.4430.212", "Firefox/89.0", "Safari/537.36"]
-    user_agent = f"Mozilla/5.0 ({random.choice(platforms)}) AppleWebKit/537.36 (KHTML, like Gecko) {random.choice(browsers)}"
-
-    headers = {
-        'User-Agent': user_agent
-    }
     try:
-        request = urllib.request.Request(url, headers=headers)
-        # Fetch the data from the API
-        with urllib.request.urlopen(request) as response:
-            return json.load(response)
+        url = f"https://api.fbi.gov/wanted/v1/list?page={page}"
+        response = requests.get(url)
+        response.raise_for_status()  # Raises an exception for bad responses
+        return response.json()
     except Exception as e:
-        print(f"Error occurred while fetching data: {e}")
+        print(f"Expection Error : {e}")
         sys.exit(1)
 
 def fetch_data_from_file(file):

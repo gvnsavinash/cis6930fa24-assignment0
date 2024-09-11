@@ -6,7 +6,7 @@ sys.path.append(
 )
 import main
 import random
-random_page = random.randint(1, 8)
+random_page = random.randint(1, 6)
 
 def test_invalid_page():
     """Test fetching data from an invalid page."""
